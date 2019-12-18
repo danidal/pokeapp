@@ -6,7 +6,7 @@ import Button from '@material-ui/core/Button'
 const PokeButton = ({ pokemonName, onClick, disabled = false }) => (
     <Box display="inline">
         <Button
-            variant="outlined"
+            /* variant="outlined" */
             onClick={onClick}
             disabled={disabled}
         >

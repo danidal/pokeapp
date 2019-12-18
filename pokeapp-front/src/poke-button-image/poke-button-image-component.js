@@ -13,9 +13,13 @@ const useStyles = makeStyles({
     }
 })
 
-const PokeButtonImage = ({ pokemonName, catched }) => {
+const PokeButtonImage = ({
+    pokemonName,
+    catched,
+    onCatch
+}) => {
     const classes = useStyles()
-    const [buttonClicked, setClicked] = useState(false)
+    const [ buttonClicked, setClicked ] = useState(false)
     const handleClick = () => setClicked(true)
 
     return (
@@ -27,8 +31,8 @@ const PokeButtonImage = ({ pokemonName, catched }) => {
         >
             <Grid item>
                 <PokeBall
-                    pokemonName={pokemonName}
-                    captured={catched}
+                    catched={catched}
+                    onCatch={onCatch}
                 ></PokeBall>
             </Grid>
             <Grid item>
@@ -50,7 +54,8 @@ const PokeButtonImage = ({ pokemonName, catched }) => {
 
 PokeButtonImage.propTypes = {
     pokemonName: PropTypes.string.isRequired,
-    catched: PropTypes.bool.isRequired
+    catched: PropTypes.bool.isRequired,
+    onCatch: PropTypes.func.isRequired
 }
 
 export { PokeButtonImage }

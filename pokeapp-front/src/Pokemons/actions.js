@@ -3,7 +3,8 @@ import {
     SET_HAS_MORE,
     SET_IS_LOADING,
     SET_POKEMONS,
-    SET_OFFSET
+    SET_OFFSET,
+    SET_CATCHED
 } from './constants'
 
 const setError = (error = true) => ({
@@ -31,4 +32,10 @@ const setOffset = (offset = 0) => ({
     offset
 })
 
-export { setError, setHasMore, setIsLoading, setPokemons, setOffset }
+const setCatched = (name = "", catched = false) => ({
+    type: SET_CATCHED,
+    name,
+    catched
+})
+
+export { setError, setHasMore, setIsLoading, setPokemons, setOffset, setCatched }

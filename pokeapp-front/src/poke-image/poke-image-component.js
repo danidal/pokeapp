@@ -7,7 +7,7 @@ import { useFetch } from '../utils/hooks'
 
 const useStyles = makeStyles({
     leftMargin: {
-        marginLeft: 16
+        marginLeft: 6
     }
 })
 
@@ -43,7 +43,7 @@ const PokeVisibleImage = ({ imageUrl }) => {
 }
 
 const PokeImage = ({ visible, pokemonName }) => {
-    const [data, loading, error] = useFetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
+    const [ data/* , loading, error */ ] = useFetch(`https://pokeapi.co/api/v2/pokemon/${pokemonName}`)
 
     return(
         visible

@@ -3,11 +3,18 @@ const isPokeApiResource = url =>
     url.startsWith("https://pokeapi.co/api/v2") ||
     url.startsWith("https://raw.githubusercontent.com/PokeAPI")
 
+const isMyServerResource = url =>
+    url.startsWith("http://localhost")
+
+const isVerifiedUrl = url =>
+    isPokeApiResource(url) || isMyServerResource(url)
+
 const isValid = (request, response) =>
-    !!response && (
-        isPokeApiResource(request.url) || (
-            response.status === 200 && response.type === 'basic'
-        )
+    !!response && 
+    request.method === 'GET' && 
+    (
+        isVerifiedUrl(request.url) ||
+        (response.status === 200 && response.type === 'basic')
     )
 
 const getByCacheFallingBackByNetwork = (request, CACHE_NAME) =>
@@ -103,7 +110,8 @@ self.addEventListener('install', e => {
                 'pokeball.png',
                 'bwpokeball.png',
                 'logo192.png',
-                'logo512.png'
+                'logo512.png',
+                'pokemon_logo.ico'
             ])
             .then(() => self.skipWaiting())
         })
@@ -117,8 +125,10 @@ self.addEventListener('activate', event => {
 
 self.addEventListener('fetch', event => {
     console.log(`fetching ${event.request.url}`)
-    event.respondWith(
-        /* getByCacheFallingBackByNetwork(event.request, CACHE_NAME) */
-        getByNetworkFallingBackByCache(event.request, CACHE_NAME, true)
-    )
+    if (event.request.method == "GET") {
+        event.respondWith(
+            /* getByCacheFallingBackByNetwork(event.request, CACHE_NAME) */
+            getByNetworkFallingBackByCache(event.request, CACHE_NAME, true)
+        )
+    }
 })

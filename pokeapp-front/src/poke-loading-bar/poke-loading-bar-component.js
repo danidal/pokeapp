@@ -2,17 +2,16 @@ import React from 'react'
 import PropTypes from 'prop-types'
 import Grid from '@material-ui/core/Grid'
 import LinearProgress from '@material-ui/core/LinearProgress'
-import { makeStyles } from '@material-ui/styles'
+/* import { makeStyles } from '@material-ui/styles' */
 
-const useStyles = makeStyles({
+/* const useStyles = makeStyles({
     linearProgress: {
-        /* backgroundColor: 'transparent', */
         height: 1
     }
-})
+}) */
 
 const PokeLoadingBar = ({ xs = 12, lg = 12 }) => {
-    const classes = useStyles()
+    /* const classes = useStyles() */
 
     return(
         <Grid
@@ -22,7 +21,7 @@ const PokeLoadingBar = ({ xs = 12, lg = 12 }) => {
             alignItems="center"
         >
             <Grid item xs={xs} lg={lg}>
-                <LinearProgress className={classes.linearProgress} />
+                <LinearProgress /* className={classes.linearProgress} */ />
             </Grid>
         </Grid>
     )
