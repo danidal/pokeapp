@@ -2,11 +2,6 @@ import { createMuiTheme } from '@material-ui/core/styles'
 
 const themeParams = {
     overrides: {
-        MuiPaper: {
-            root: {
-                backgroundColor: 'gold'
-            }
-        },
         MuiGrid: {
             item: {
                 margin: '40px 0'
@@ -14,7 +9,13 @@ const themeParams = {
         },
         MuiBackdrop: {
             root: {
-                zIndex: 2
+                zIndex: 1000
+            }
+        },
+        MuiBadge: {
+            colorPrimary: {
+                backgroundColor: '#7386ec',
+                fontWeight: 'bold'
             }
         }
     }

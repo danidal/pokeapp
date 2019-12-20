@@ -1,10 +1,11 @@
-import React, { useReducer, useEffect, useState, Fragment } from 'react'
+import React, { useReducer, useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
 import request from 'superagent'
-import { debounce } from 'lodash'
-import { Offline, Online } from 'react-detect-offline'
+import { Offline/* , Online */ } from 'react-detect-offline'
 import Box from '@material-ui/core/Box'
 
+import { wait } from '../utils/wait'
+import { random } from '../utils/random'
 import  { reducer, initialState } from './reducer'
 import {
     setError,
@@ -12,31 +13,27 @@ import {
     setIsLoading,
     setPokemons,
     setOffset,
-    setCatched
+    setCatched,
+    setGameActive,
+    setEncountered
 } from './actions'
 import PokeSnackbar from '../poke-snackbar/poke-snackbar-component'
-import { PokeButtonImage } from '../poke-button-image/poke-button-image-component'
 import { PokeOfflineMessage } from '../poke-error-message/poke-offline-message-component'
-import { /* PokeLoader, */ PokeBackdrop } from '../poke-preloader/poke-preloader-component'
-import { PokeNetworkRefresher } from '../poke-network-refresher/poke-network-refresher-component'
-import { PokeThemeController } from '../poke-theme-controller/poke-theme-controller-component'
+import { PokeAppBar } from '../poke-app-bar/poke-app-bar-component'
+import { MemoPokeEncounter as PokeEncounter } from '../poke-encounter/poke-encounter-component'
+import { PokeRest } from '../poke-rest/poke-rest-component'
 
-const checkIfPokemonIsCatched = async (pokemon = "") => {
-    let isCatched = false
-    try {
-        const pokemonFromDB = await request.get(`http://localhost:4000/pokemons/${pokemon.name}`)
-        if (pokemonFromDB.body.length > 0) isCatched = true
-    } catch(error) {
-        console.log(error)
-    }
-    return isCatched
+const getQuantityOfCatchedPokemons = async (pokemon = "") => {
+    const pokemonFromDB = await request.get(`http://localhost:4000/pokemons/${pokemon.name}`)
+    const { quantity } = pokemonFromDB.body[0] || { quantity: 0 }
+    return quantity
 }
 
 const addCatchedProp = async (pokemon = "") => {
-    const isCatched = await checkIfPokemonIsCatched(pokemon)
+    const quantity = await getQuantityOfCatchedPokemons(pokemon)
     return ({
         name: pokemon.name,
-        catched: isCatched
+        quantity
     })
 }
 
@@ -47,20 +44,11 @@ const Pokemons = ({ handleThemeToggle, dark }) => {
         hasMore,
         isLoading,
         pokemons,
-        offset
+        offset,
+        isGameActive,
+        encountered
     }, dispatch] = useReducer(reducer, initialState)
     const [ isErrorShown, setIsErrorShown ] = useState(false)
-
-    window.onscroll = debounce(() => {
-        if (isLoading || !hasMore) return
-
-        if (
-            window.innerHeight + document.documentElement.scrollTop
-            === document.documentElement.offsetHeight
-        ) {
-            loadPokemons(offset, loadingGroupDimension, pokemons)
-        }
-    }, 100)
 
     const loadPokemons = async (offset, loadingGroupDimension, pokemons) => {
         dispatch(setIsLoading(true))
@@ -90,46 +78,50 @@ const Pokemons = ({ handleThemeToggle, dark }) => {
         }
     }
 
-    const catchOrLoseFactory = (name, catched) =>
+    const catchFactory = name =>
         async () => {
             try {
-                const newCatched = !catched
-                if(newCatched) {
-                    await request.post(`http://localhost:4000/pokemons/${name}`)
-                } else {
-                    await request.delete(`http://localhost:4000/pokemons/${name}`)
-                }
-                dispatch(setCatched(name, newCatched))
+                await request.post(`http://localhost:4000/pokemons/${name}`)
+                /* await request.delete(`http://localhost:4000/pokemons/${name}`) */
+                dispatch(setCatched(name))
             } catch(error) {
                 console.log(error)
             }
     }
+
+    const handleGameActivation = () => dispatch(setGameActive(!isGameActive))
+    const handleEncounterLeave = () => dispatch(setEncountered(""))
+    const encounterPokemon = pokemons => {
+        const pokemon = pokemons[random(pokemons.length - 1)]
+        return pokemon.name
+    }
+    const timeToWait = () => random(10000, 2000)
+    const closeErrorAlert = () => setIsErrorShown(false)
 
     useEffect(() => {
         loadPokemons(offset, loadingGroupDimension, pokemons)
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [])
 
-    const pokemonList = pokemons.map(({ name, catched }) => {
-        const catchOrLose = catchOrLoseFactory(name, catched)
-
-        return(
-            <Fragment key={name}>
-                <PokeButtonImage
-                    pokemonName={name}
-                    catched={catched}
-                    onCatch={catchOrLose}
-                />
-            </Fragment>
-        )
+    useEffect(() => {
+        let shouldRun = true
+        if(isGameActive && !encountered) {
+            wait(timeToWait()).then(() => {
+                if (shouldRun) {
+                    dispatch(setEncountered(encounterPokemon(pokemons)))
+                }
+            })
+        }
+        
+        return () => {
+            shouldRun = false
+        }
     })
+
+    const handleCatch = catchFactory(encountered)
 
     return (
         <Box>
-            <Online>
-                <PokeNetworkRefresher />
-            </Online>
-
             <Offline>
                 <PokeSnackbar
                     message={<PokeOfflineMessage />}
@@ -137,29 +129,31 @@ const Pokemons = ({ handleThemeToggle, dark }) => {
                 />
             </Offline>
 
-            <PokeThemeController 
-                onClick={handleThemeToggle}
+            <PokeAppBar 
+                handleThemeToggle={handleThemeToggle}
                 dark={dark}
+                handleGameActivation={handleGameActivation}
+                active={isGameActive}
             />
-
-            {pokemonList}
-
-            {isLoading &&
-                /* <PokeLoader /> */
-                <PokeBackdrop />
+            
+            {encountered
+                ?   <PokeEncounter
+                        name={encountered}
+                        handleClose={handleEncounterLeave}
+                        handleCatch={handleCatch}
+                    />
+                :   <PokeRest
+                        isErrorShown={isErrorShown}
+                        hasMore={hasMore}
+                        isLoading={isLoading}
+                        offset={offset}
+                        loadingGroupDimension={loadingGroupDimension}
+                        pokemons={pokemons}
+                        loadPokemons={loadPokemons}
+                        closeErrorAlert={closeErrorAlert}
+                    />
             }
-            {!hasMore &&
-                <Box m={2}>You reached the end!</Box>
-            }
-
-            <PokeSnackbar
-                message="Error on loading data :|"
-                variant="error"
-                duration={3000}
-                vertical="bottom"
-                forcedExternalOpen={isErrorShown}
-                extraHandleClose={() => setIsErrorShown(false)}
-            />
+            
         </Box>
     )
 }

@@ -4,7 +4,9 @@ import {
     SET_IS_LOADING,
     SET_POKEMONS,
     SET_OFFSET,
-    SET_CATCHED
+    SET_CATCHED,
+    SET_GAME_ACTIVE,
+    SET_POKEMON_ENCOUNTERED
 } from './constants'
 
 const initialState = {
@@ -12,12 +14,25 @@ const initialState = {
     hasMore: true,
     isLoading: false,
     pokemons: [],
-    offset: 0
+    offset: 0,
+    name: "",
+    isGameActive: false,
+    encountered: ""
 }
 
 const reducer = (
     state = initialState,
-    { type, error, hasMore, isLoading, pokemons, offset, name, catched } = {}
+    {
+        type,
+        error,
+        hasMore,
+        isLoading, 
+        pokemons,
+        offset,
+        name: thisName,
+        isGameActive,
+        encountered
+    } = {}
 ) => {
     switch(type) {
         case SET_ERROR:
@@ -36,13 +51,22 @@ const reducer = (
             return ({ ...state, offset })
 
         case SET_CATCHED:
-            const newPokemons = state.pokemons.map(pokemon => {
-                    if(pokemon.name === name) {
-                        return ({ name, catched })
+            const newPokemons = state.pokemons.map(({ name, quantity }) => {
+                    if(name === thisName) {
+                        return ({
+                            name,
+                            quantity: quantity + 1
+                        })
                     }
-                    return pokemon
+                    return { name, quantity }
                 })
             return ({ ...state, pokemons: newPokemons })
+
+        case SET_GAME_ACTIVE:
+            return ({ ...state, isGameActive })
+
+        case SET_POKEMON_ENCOUNTERED:
+            return ({ ...state, encountered })
 
         default:
             return ({ ...state })

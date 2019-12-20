@@ -1,6 +1,7 @@
 import React from 'react'
 import PropTypes from 'prop-types'
 import { makeStyles } from '@material-ui/styles'
+import Badge from '@material-ui/core/Badge'
 
 const useStyles = makeStyles({
     image: {
@@ -13,14 +14,16 @@ const width = 26
 const height = 26
 
 const PokeBall = ({
-    catched,
-    onCatch
+    quantity
 }) => {
     const classes = useStyles()
-    const pokeBallSrc = catched ? "/pokeball.png" : "/bwpokeball.png"
-    const imgStyle = { opacity: catched ? 1 : .2 }
-    
-    return (
+    const pokeBallSrc = 
+        quantity > 0
+            ?   "/pokeball.png"
+            :   "/bwpokeball.png"
+    const imgStyle = { opacity: (quantity > 0) ? 1 : .2 }
+
+    const imgElement =
         <img
             className={classes.image}
             src={pokeBallSrc}
@@ -28,14 +31,24 @@ const PokeBall = ({
             width={width}
             height={height}
             style={imgStyle}
-            onClick={onCatch}
         />
+
+    return (
+        quantity > 1
+        ?   <Badge badgeContent={quantity} color="primary"
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'left',
+                }}
+            >
+                {imgElement}
+            </Badge>
+        :   imgElement
     )
 }
 
 PokeBall.propTypes = {
-    catched: PropTypes.bool.isRequired,
-    onCatch: PropTypes.func.isRequired
+    quantity: PropTypes.number.isRequired
 }
 
 export { PokeBall }

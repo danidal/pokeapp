@@ -111,7 +111,8 @@ self.addEventListener('install', e => {
                 'bwpokeball.png',
                 'logo192.png',
                 'logo512.png',
-                'pokemon_logo.ico'
+                'pokemon_logo.ico',
+                'ash.png'
             ])
             .then(() => self.skipWaiting())
         })

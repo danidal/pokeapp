@@ -4,7 +4,9 @@ import {
     SET_IS_LOADING,
     SET_POKEMONS,
     SET_OFFSET,
-    SET_CATCHED
+    SET_CATCHED,
+    SET_GAME_ACTIVE,
+    SET_POKEMON_ENCOUNTERED
 } from './constants'
 
 const setError = (error = true) => ({
@@ -32,10 +34,28 @@ const setOffset = (offset = 0) => ({
     offset
 })
 
-const setCatched = (name = "", catched = false) => ({
+const setCatched = (name = "") => ({
     type: SET_CATCHED,
-    name,
-    catched
+    name
 })
 
-export { setError, setHasMore, setIsLoading, setPokemons, setOffset, setCatched }
+const setGameActive = (isGameActive = false) => ({
+    type: SET_GAME_ACTIVE,
+    isGameActive
+})
+
+const setEncountered = (encountered = "") => ({
+    type: SET_POKEMON_ENCOUNTERED,
+    encountered
+})
+
+export {
+    setError,
+    setHasMore,
+    setIsLoading,
+    setPokemons,
+    setOffset,
+    setCatched,
+    setGameActive,
+    setEncountered
+}

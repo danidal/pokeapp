@@ -6,7 +6,6 @@ import styled, { keyframes } from 'styled-components'
 import { merge, rubberBand, fadeInUp } from 'react-animations';
 import './preloader.css'
 import { makeStyles } from '@material-ui/styles'
-/* import { PokeLoadingBar } from '../poke-loading-bar/poke-loading-bar-component' */
 
 const useStyles = makeStyles(theme => ({
     grid: {
@@ -14,7 +13,6 @@ const useStyles = makeStyles(theme => ({
         position: 'fixed',
         top: 0,
         zIndex: 1300,
-        /* backgroundColor: theme.palette.background.default */
     }
 }))
 
@@ -52,23 +50,12 @@ const PokePreloader = () =>
 
 const PokeLoader = () =>
     <PokeLoaderTemplate >
-        {/* <img
-            id="f1"
-            src="/bwicon2.ico"
-            alt="loader"
-        />
-        <img
-            id="f2"
-            src="/favicon.ico"
-            alt="loader"
-        />
-        <PokeLoadingBar /> */}
         <CircularProgress />
     </PokeLoaderTemplate>
 
-const PokeBackdrop = () =>
+const PokeWaitingBackdrop = () =>
     <Backdrop open={true}>
         <CircularProgress />
     </Backdrop>
 
-export { PokePreloader, PokeLoader, PokeBackdrop }
+export { PokePreloader, PokeLoader, PokeWaitingBackdrop }
