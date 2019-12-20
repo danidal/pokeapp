@@ -21,7 +21,11 @@ const PokeBall = ({
         quantity > 0
             ?   "/pokeball.png"
             :   "/bwpokeball.png"
-    const imgStyle = { opacity: (quantity > 0) ? 1 : .2 }
+
+    const imgStyle = { 
+        opacity: (quantity > 0) ? 1 : .2,
+        zIndex: -2
+    }
 
     const imgElement =
         <img

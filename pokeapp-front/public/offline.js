@@ -128,8 +128,8 @@ self.addEventListener('fetch', event => {
     console.log(`fetching ${event.request.url}`)
     if (event.request.method == "GET") {
         event.respondWith(
-            /* getByCacheFallingBackByNetwork(event.request, CACHE_NAME) */
-            getByNetworkFallingBackByCache(event.request, CACHE_NAME, true)
+            getByCacheFallingBackByNetwork(event.request, CACHE_NAME)
+            /* getByNetworkFallingBackByCache(event.request, CACHE_NAME, true) */
         )
     }
 })

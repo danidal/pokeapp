@@ -90,7 +90,10 @@ const Pokemons = ({ handleThemeToggle, dark }) => {
     }
 
     const handleGameActivation = () => dispatch(setGameActive(!isGameActive))
-    const handleEncounterLeave = () => dispatch(setEncountered(""))
+    const handleEncounterLeave = () => {
+        dispatch(setEncountered(""))
+        document.body.style.overflow = 'visible'
+    }
     const encounterPokemon = pokemons => {
         const pokemon = pokemons[random(pokemons.length - 1)]
         return pokemon.name
@@ -108,6 +111,7 @@ const Pokemons = ({ handleThemeToggle, dark }) => {
         if(isGameActive && !encountered) {
             wait(timeToWait()).then(() => {
                 if (shouldRun) {
+                    document.body.style.overflow = 'hidden'
                     dispatch(setEncountered(encounterPokemon(pokemons)))
                 }
             })
@@ -136,24 +140,25 @@ const Pokemons = ({ handleThemeToggle, dark }) => {
                 active={isGameActive}
             />
             
-            {encountered
-                ?   <PokeEncounter
-                        name={encountered}
-                        handleClose={handleEncounterLeave}
-                        handleCatch={handleCatch}
-                    />
-                :   <PokeRest
-                        isErrorShown={isErrorShown}
-                        hasMore={hasMore}
-                        isLoading={isLoading}
-                        offset={offset}
-                        loadingGroupDimension={loadingGroupDimension}
-                        pokemons={pokemons}
-                        loadPokemons={loadPokemons}
-                        closeErrorAlert={closeErrorAlert}
-                    />
+            <PokeRest
+                isErrorShown={isErrorShown}
+                hasMore={hasMore}
+                isLoading={isLoading}
+                offset={offset}
+                loadingGroupDimension={loadingGroupDimension}
+                pokemons={pokemons}
+                encountered={encountered}
+                loadPokemons={loadPokemons}
+                closeErrorAlert={closeErrorAlert}
+            />
+
+            {encountered &&
+                <PokeEncounter
+                    name={encountered}
+                    handleClose={handleEncounterLeave}
+                    handleCatch={handleCatch}
+                />
             }
-            
         </Box>
     )
 }

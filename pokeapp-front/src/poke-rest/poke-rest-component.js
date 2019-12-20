@@ -14,11 +14,12 @@ const PokeRest = ({
     offset,
     loadingGroupDimension,
     pokemons,
+    encountered,
     loadPokemons,
     closeErrorAlert
 }) => {
     window.onscroll = debounce(() => {
-        if (isLoading || !hasMore) return
+        if (isLoading || !!encountered || !hasMore) return
 
         if (
             window.innerHeight + document.documentElement.scrollTop
@@ -67,6 +68,7 @@ PokeRest.propTypes = {
     offset: PropTypes.number.isRequired,
     loadingGroupDimension: PropTypes.number.isRequired,
     pokemons: PropTypes.array.isRequired,
+    encountered: PropTypes.string.isRequired,
     loadPokemons: PropTypes.func.isRequired,
     closeErrorAlert: PropTypes.func.isRequired,
 }

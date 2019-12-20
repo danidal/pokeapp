@@ -16,6 +16,9 @@ const themeParams = {
             colorPrimary: {
                 backgroundColor: '#7386ec',
                 fontWeight: 'bold'
+            },
+            badge: {
+                zIndex: -1
             }
         }
     }
